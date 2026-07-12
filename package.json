@@ -1,0 +1,21 @@
+{
+  "name": "llm-invader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "js13kGames entry — vanilla JS Space Invader clone (Canvas API, zero runtime dependencies)",
+  "scripts": {
+    "clean": "node scripts/clean.js",
+    "build": "npm run clean && node scripts/build.js",
+    "build:no-rr": "npm run clean && cross-env RR=0 node scripts/build.js",
+    "zip": "node scripts/zip.js",
+    "size": "npm run build && npm run zip",
+    "size:no-rr": "npm run build:no-rr && npm run zip"
+  },
+  "devDependencies": {
+    "terser": "^5.34.1",
+    "roadroller": "^2.1.0",
+    "archiver": "^7.0.1",
+    "cross-env": "^7.0.3"
+  }
+}
