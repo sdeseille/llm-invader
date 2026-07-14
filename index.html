@@ -54,24 +54,61 @@ player.draw = () => {
 /* enemy drawing */
 function drawEnemy(enemy) {
   ctx.fillStyle = enemy.color;
-  ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+  if (enemy.shape === 'circle') {
+    ctx.beginPath();
+    ctx.arc(enemy.x + enemy.w / 2, enemy.y + enemy.h / 2, 16, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (enemy.shape === 'triangle') {
+    const cx = enemy.x + enemy.w / 2;
+    const cy = enemy.y + enemy.h / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, enemy.y);
+    ctx.lineTo(cx + enemy.w / 2, enemy.y + enemy.h);
+    ctx.lineTo(cx - enemy.w / 2, enemy.y + enemy.h);
+    ctx.closePath();
+    ctx.fill();
+  }  else if (enemy.shape === 'triangle_down') {
+    const cx = enemy.x + enemy.w / 2;
+    const cy = enemy.y + enemy.h / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - enemy.w / 2, enemy.y);
+    ctx.lineTo(cx + enemy.w / 2, enemy.y);
+    ctx.lineTo(cx, enemy.y + enemy.h);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // square
+    ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+  }
 }
 
 /* enemies */
 let enemies = [];
 let particles = [];
 
-const enemyTypes = [
-  { w: 32, h: 32, x: 50,  y: 50, vx: 0.5, vy: 0.2,  color: '#ff6666' },
-  { w: 32, h: 32, x: 150, y: 50, vx: 1.2, vy: 0.3,  color: '#ffcc00' },
-  { w: 48, h: 48, x: 250, y: 50, vx: 0.3, vy: 0.05, color: '#66ff66' },
-  { w: 32, h: 32, x: 50,   y: 150, vx: 0.6, vy: 0.4, color: '#9966ff' },
-  { w: 32, h: 32, x: 150,  y: 150, vx: 0.8, vy: 0.5, color: '#ffff33' },
-  { w: 48, h: 48, x: 250,  y: 150, vx: 0.4, vy: 0.15, color: '#00ccff' }
-];
+const enemyShapes = ['circle', 'triangle', 'triangle_down', 'square'];
+const enemyColors = ['#ff66aa', '#aaffcc', '#cc99ff', '#ddbb88', '#88ffbb', '#ffdd88', '#88aadd', '#ffff88'];
+
+function createEnemies() {
+  enemies = [];
+  for (let s of enemyShapes) {
+    for (let i = 0; i < 8; i++) {
+      let x, y;
+      const cols = i;
+      const rows = enemyShapes.indexOf(s); // triangle has 1 row, triangle_down has 2, square has 3
+      x = canvas.width / 4 + cols * (32 + 4);
+      y = canvas.height / 4 - 35 + rows * (36 + 4);
+      accelerator = rows % 2 ? 0.6 : 0.45;
+      enemies.push({
+        shape: s,
+        w: 32, h: 32, x, y, vx: 0.3 * accelerator, vy: 0, color: enemyColors[Math.floor(Math.random() * enemyColors.length)]
+      });
+    }
+  }
+}
 
 function resetWave() {
-  enemies = enemyTypes.map(t => ({ ...t, alive: true }));
+  createEnemies();
 }
 resetWave();
 
